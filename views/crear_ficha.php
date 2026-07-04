@@ -3,816 +3,542 @@
 session_start();
 
 require_once "layout/header.php";
+require_once "../models/ProgramaModel.php";
+
+$programas = ProgramaModel::listarActivos();
 
 ?>
 
 <style>
-    /* ==========================================================================
-   BioAsist SENA — Design System
-   Sistema Inteligente de Control de Asistencia
-   ========================================================================== */
+
+/* ══════════════════════════════════════
+   RESET & BASE
+══════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  /* Verdes marca */
-  --verde-900: #0c1f14;
-  --verde-800: #103622;
-  --verde-700: #14532d;
-  --verde-600: #16a34a;
-  --verde-500: #22c55e;
-  --verde-400: #4ade80;
-  --verde-100: #dcfce7;
-  --verde-50:  #f0fdf4;
-
-  /* Acentos de estado */
-  --azul-100: #dbeafe;
-  --azul-600: #2563eb;
-  --amarillo-100: #fef3c7;
-  --amarillo-600: #d97706;
-  --morado-100: #f3e8ff;
-  --morado-600: #9333ea;
-  --rojo-600: #dc2626;
-
-  /* Neutros */
-  --gris-25:  #fafbfa;
-  --gris-50:  #f4f6f5;
-  --gris-100: #eef1ef;
-  --gris-200: #e2e8e4;
-  --gris-300: #cbd5cf;
-  --gris-400: #9aa79f;
-  --gris-500: #6b7a70;
-  --gris-600: #4b5b50;
-  --gris-700: #33413a;
-  --gris-900: #16201a;
-
-  --blanco: #ffffff;
-
-  /* Layout */
-  --sidebar-width: 260px;
-  --radius-sm: 8px;
-  --radius-md: 14px;
-  --radius-lg: 20px;
-  --radius-pill: 999px;
-
-  --shadow-card: 0 1px 2px rgba(16, 24, 20, 0.04), 0 8px 24px rgba(16, 24, 20, 0.06);
-  --shadow-card-hover: 0 4px 10px rgba(16, 24, 20, 0.06), 0 14px 32px rgba(16, 24, 20, 0.09);
-
-  --font-base: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    --verde:        #39A900;
+    --verde-oscuro: #1f6b00;
+    --verde-claro:  #eaf7e0;
+    --negro:        #0d1b08;
+    --negro-suave:  #15290e;
+    --bg:           #f4f6f9;
+    --card-radius:  14px;
+    --shadow:       0 2px 12px rgba(0,0,0,.07);
 }
-
-* { box-sizing: border-box; }
 
 body {
-  margin: 0;
-  font-family: var(--font-base);
-  background: var(--gris-50);
-  color: var(--gris-900);
-  -webkit-font-smoothing: antialiased;
+    background: var(--bg);
+    font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+    font-size: 14px; color: #1a1a1a;
 }
 
-a { text-decoration: none; color: inherit; }
-button { font-family: inherit; cursor: pointer; }
-
-/* ==========================================================================
-   Layout general: sidebar + contenido
-   ========================================================================== */
-
-.app-shell {
-  display: flex;
-  min-height: 100vh;
-}
+/* ══════════════════════════════════════
+   LAYOUT
+══════════════════════════════════════ */
+.dash-layout { display: flex; min-height: 100vh; }
 
 .sidebar {
-  width: var(--sidebar-width);
-  flex-shrink: 0;
-  background: linear-gradient(180deg, var(--verde-900) 0%, #0a1a10 100%);
-  color: rgba(255, 255, 255, 0.85);
-  display: flex;
-  flex-direction: column;
-  padding: 22px 16px;
-  position: sticky;
-  top: 0;
-  height: 100vh;
+    width: 220px; flex-shrink: 0;
+    position: fixed; top: 0; left: 0; bottom: 0;
+    overflow-y: auto;
+    background: linear-gradient(180deg, var(--negro) 0%, var(--negro-suave) 100%);
+    padding: 22px 16px;
+    display: flex; flex-direction: column; justify-content: space-between;
+    z-index: 1000;
 }
 
-.sidebar-brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 0 6px 22px;
+.sidebar-brand { display: flex; align-items: center; gap: 10px; margin-bottom: 28px; }
+.sidebar-brand .icon-box {
+    width: 40px; height: 40px; background: var(--verde); border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; color: #fff; flex-shrink: 0;
 }
+.sidebar-brand h5    { color: #fff; font-size: 14px; font-weight: 700; margin: 0; }
+.sidebar-brand small { color: #b9c9b0; font-size: 10px; display: block; margin-top: 1px; }
 
-.sidebar-brand-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-sm);
-  background: var(--verde-500);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--verde-900);
-  font-size: 18px;
+.sidebar-nav a {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: 10px; margin-bottom: 4px;
+    color: #cfd9c8; text-decoration: none; font-size: 13px; transition: .15s;
 }
+.sidebar-nav a i      { width: 16px; text-align: center; }
+.sidebar-nav a:hover  { background: rgba(57,169,0,.18); color: #fff; }
+.sidebar-nav a.active { background: var(--verde); color: #fff; font-weight: 600; }
 
-.sidebar-brand-title {
-  font-size: 15px;
-  font-weight: 700;
-  color: #fff;
-  line-height: 1.2;
+.sidebar-bottom { margin-top: 20px; }
+
+.sidebar-biometric {
+    background: rgba(57,169,0,.15); border: 1px solid rgba(57,169,0,.4);
+    border-radius: 12px; padding: 10px 12px;
+    display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
 }
-
-.sidebar-brand-subtitle {
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.5);
+.sidebar-biometric .icon-box {
+    width: 32px; height: 32px; background: var(--verde); border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 14px; flex-shrink: 0;
 }
+.sidebar-biometric strong { color: #fff; font-size: 12px; display: block; }
+.sidebar-biometric span   { color: #7ddc5a; font-size: 11px; }
+.sidebar-biometric span i { font-size: 8px; margin-right: 3px; }
 
-.sidebar-nav {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  margin-top: 8px;
-}
-
-.sidebar-link {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 11px 14px;
-  border-radius: var(--radius-sm);
-  font-size: 14px;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.65);
-  transition: background 0.15s ease, color 0.15s ease;
-}
-
-.sidebar-link i { width: 18px; text-align: center; font-size: 14px; }
-
-.sidebar-link:hover {
-  background: rgba(255, 255, 255, 0.06);
-  color: #fff;
-}
-
-.sidebar-link.active {
-  background: var(--verde-500);
-  color: var(--verde-900);
-  font-weight: 700;
-}
-
-.sidebar-footer {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: 12px;
-}
-
-.sidebar-status,
 .sidebar-user {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
-  border-radius: var(--radius-sm);
-  background: rgba(255, 255, 255, 0.05);
-  font-size: 13px;
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: 10px; background: rgba(255,255,255,.06);
+}
+.sidebar-user .avatar {
+    width: 32px; height: 32px; background: var(--verde); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 13px; flex-shrink: 0;
+}
+.sidebar-user .info p    { color: #fff; font-size: 12px; font-weight: 600; margin: 0; }
+.sidebar-user .info span { color: #9aa39a; font-size: 11px; }
+
+.main-area {
+    margin-left: 220px; flex: 1;
+    display: flex; flex-direction: column; min-height: 100vh;
 }
 
-.sidebar-status .dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--verde-500);
-}
-
-.sidebar-user-avatar {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: var(--verde-500);
-  color: var(--verde-900);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 13px;
-}
-
-/* ==========================================================================
-   Contenido principal
-   ========================================================================== */
-
-.main-content {
-  flex: 1;
-  padding: 26px 32px 60px;
-  max-width: 100%;
-}
-
+/* ══════════════════════════════════════
+   TOPBAR
+══════════════════════════════════════ */
 .topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 26px;
+    background: #fff; padding: 14px 24px;
+    border-bottom: 1px solid #eaeaea;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 999;
+}
+.topbar-left h4    { font-size: 18px; font-weight: 700; margin: 0; }
+.topbar-left small { color: #888; font-size: 12px; }
+.topbar-right      { display: flex; align-items: center; gap: 14px; }
+.time-box .hora    { font-size: 20px; font-weight: 700; color: #1a1a1a; line-height: 1; text-align: right; }
+.time-box .fecha   { font-size: 11px; color: #888; margin-top: 2px; text-align: right; }
+
+.notif-btn {
+    position: relative; width: 36px; height: 36px;
+    background: #f4f6f4; border: 1px solid #e8e8e8; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    color: #555; font-size: 15px; cursor: pointer;
+}
+.notif-btn .badge-dot {
+    position: absolute; top: -4px; right: -4px;
+    background: var(--verde); color: #fff;
+    font-size: 9px; font-weight: 700; width: 17px; height: 17px;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    border: 2px solid #fff;
+}
+.user-btn {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--verde); color: #fff;
+    border: none; border-radius: 10px; padding: 8px 14px;
+    font-size: 13px; font-weight: 600; cursor: pointer;
 }
 
-.topbar h1 {
-  font-size: 22px;
-  font-weight: 700;
-  margin: 0;
+/* ══════════════════════════════════════
+   CONTENIDO
+══════════════════════════════════════ */
+.content { padding: 24px; flex: 1; }
+
+/* ── Cabecera ── */
+.page-topbar {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 20px;
 }
+.page-topbar-left h2 { font-size: 20px; font-weight: 700; margin: 0 0 2px; }
+.page-topbar-left p  { color: #888; font-size: 13px; margin: 0; }
 
-.topbar p {
-  margin: 2px 0 0;
-  font-size: 13px;
-  color: var(--gris-500);
+.btn-volver {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 9px 16px;
+    background: #fff; color: #555;
+    border: 1.5px solid #e0e0e0; border-radius: 10px;
+    font-size: 13px; font-weight: 600; text-decoration: none;
+    transition: border-color .2s, color .2s;
 }
+.btn-volver:hover { border-color: var(--verde); color: var(--verde); }
 
-.topbar-right {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-}
-
-.topbar-clock {
-  text-align: right;
-  font-size: 12px;
-  color: var(--gris-500);
-}
-
-.topbar-clock strong {
-  display: block;
-  font-size: 16px;
-  color: var(--gris-900);
-}
-
-.topbar-user {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--verde-500);
-  color: #fff;
-  padding: 8px 16px;
-  border-radius: var(--radius-pill);
-  font-weight: 600;
-  font-size: 14px;
-}
-
-/* Título de página + acción */
-
-.page-title-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 24px;
-}
-
-.page-title-row h3 {
-  margin: 0 0 4px;
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--gris-900);
-}
-
-.page-title-row > div > p {
-  margin: 0;
-  font-size: 13.5px;
-  color: var(--gris-500);
-}
-
-/* ==========================================================================
-   Botones
-   ========================================================================== */
-
-.btn-volver,
-.btn-cancelar {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 18px;
-  border-radius: var(--radius-sm);
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--gris-600);
-  background: var(--blanco);
-  border: 1px solid var(--gris-200);
-  transition: background 0.15s ease, border-color 0.15s ease;
-}
-
-.btn-volver:hover,
-.btn-cancelar:hover {
-  background: var(--gris-100);
-  border-color: var(--gris-300);
-}
-
-.btn-guardar,
-.btn-primario,
-.btn-nueva-ficha {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
-  border: none;
-  border-radius: var(--radius-sm);
-  font-size: 14px;
-  font-weight: 700;
-  color: #fff;
-  background: var(--verde-500);
-  box-shadow: 0 2px 6px rgba(34, 197, 94, 0.35);
-  transition: background 0.15s ease, transform 0.05s ease;
-}
-
-.btn-guardar:hover,
-.btn-primario:hover,
-.btn-nueva-ficha:hover {
-  background: var(--verde-600);
-}
-
-.btn-guardar:active,
-.btn-primario:active,
-.btn-nueva-ficha:active {
-  transform: translateY(1px);
-}
-
-.btn-excel {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 18px;
-  border-radius: var(--radius-sm);
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--verde-700);
-  background: var(--verde-100);
-  border: 1px solid var(--verde-100);
-}
-
-.btn-excel:hover { background: #d3f8e0; }
-
-/* ==========================================================================
-   Tarjetas de estadísticas (stats)
-   ========================================================================== */
-
-.stats-row {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 18px;
-  margin-bottom: 24px;
-}
-
-.stat-card {
-  background: var(--blanco);
-  border-radius: var(--radius-lg);
-  padding: 20px;
-  box-shadow: var(--shadow-card);
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.stat-card-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.stat-card-icon {
-  width: 42px;
-  height: 42px;
-  border-radius: var(--radius-sm);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 17px;
-}
-
-.stat-card-icon.blue   { background: var(--azul-100); color: var(--azul-600); }
-.stat-card-icon.green  { background: var(--verde-100); color: var(--verde-600); }
-.stat-card-icon.yellow { background: var(--amarillo-100); color: var(--amarillo-600); }
-.stat-card-icon.purple { background: var(--morado-100); color: var(--morado-600); }
-
-.stat-card-label {
-  font-size: 13px;
-  color: var(--gris-500);
-}
-
-.stat-card-value {
-  font-size: 28px;
-  font-weight: 800;
-  color: var(--gris-900);
-}
-
-.stat-card-caption {
-  font-size: 12px;
-  color: var(--gris-400);
-}
-
-/* ==========================================================================
-   Tarjeta contenedora (form-card, panel, listado)
-   ========================================================================== */
-
-.form-card,
-.panel-card {
-  background: var(--blanco);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-card);
-  overflow: hidden;
-}
-
+/* ══════════════════════════════════════
+   CARD FORMULARIO
+══════════════════════════════════════ */
 .form-card {
-  padding: 26px 28px 28px;
+    background: #fff;
+    border-radius: var(--card-radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
 }
 
 .form-card-header {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-bottom: 22px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid var(--gris-100);
+    background: linear-gradient(90deg, #1a6b2e, #39A900);
+    padding: 16px 24px;
+    display: flex; align-items: center; gap: 12px;
+}
+.form-card-header .header-icon {
+    width: 42px; height: 42px;
+    background: rgba(255,255,255,.2); border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; color: #fff; flex-shrink: 0;
+}
+.form-card-header h3    { color: #fff; font-size: 15px; font-weight: 700; margin: 0; }
+.form-card-header small { color: rgba(255,255,255,.75); font-size: 12px; }
+
+/* ══════════════════════════════════════
+   CUERPO DEL FORMULARIO
+══════════════════════════════════════ */
+.form-body { padding: 26px 26px 0; }
+
+/* Grids */
+.form-grid-1-2 { display: grid; grid-template-columns: 1fr 2fr; gap: 0 24px; }
+.form-grid-3   { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0 24px; }
+.form-grid-2   { display: grid; grid-template-columns: 1fr 1fr; gap: 0 24px; }
+
+.form-group      { margin-bottom: 20px; }
+.form-group.full { grid-column: 1 / -1; }
+
+.field-label {
+    display: flex; align-items: center; gap: 5px;
+    font-size: 12px; font-weight: 700;
+    color: #555; text-transform: uppercase;
+    letter-spacing: .5px; margin-bottom: 7px;
+}
+.field-label .req { color: #e53935; font-size: 14px; line-height: 1; }
+
+.input-wrap { position: relative; }
+
+.input-icon {
+    position: absolute; left: 13px; top: 50%;
+    transform: translateY(-50%);
+    color: #bbb; font-size: 14px; pointer-events: none;
 }
 
-.form-icon {
-  width: 46px;
-  height: 46px;
-  border-radius: var(--radius-sm);
-  background: var(--verde-100);
-  color: var(--verde-600);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  flex-shrink: 0;
+.input-wrap input,
+.input-wrap select {
+    width: 100%;
+    padding: 11px 14px 11px 38px;
+    border: 1.5px solid #e0e0e0; border-radius: 10px;
+    font-size: 14px; color: #333;
+    outline: none; background: #fafafa;
+    transition: border-color .2s, background .2s;
+    appearance: none; -webkit-appearance: none;
+    font-family: inherit;
+}
+.input-wrap input:focus,
+.input-wrap select:focus { border-color: var(--verde); background: #fff; }
+.input-wrap input::placeholder { color: #ccc; }
+
+.select-arrow {
+    position: absolute; right: 13px; top: 50%;
+    transform: translateY(-50%);
+    color: #bbb; font-size: 11px; pointer-events: none;
 }
 
-.form-card-header h5 {
-  margin: 0 0 2px;
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--gris-900);
+/* Separadores de sección */
+.section-sep {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 11px; font-weight: 700; color: #aaa;
+    text-transform: uppercase; letter-spacing: .5px;
+    margin-bottom: 4px; grid-column: 1 / -1;
+}
+.section-sep::after { content: ''; flex: 1; height: 1px; background: #f0f0f0; }
+.section-sep i { color: var(--verde); font-size: 12px; }
+
+/* ── Footer botones ── */
+.form-footer {
+    display: flex; justify-content: flex-end; gap: 10px;
+    padding: 16px 26px 24px;
+    border-top: 1px solid #f0f0f0;
+    margin-top: 4px;
 }
 
-.form-card-header p {
-  margin: 0;
-  font-size: 13px;
-  color: var(--gris-500);
+.btn-cancelar {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 10px 20px;
+    background: #f4f4f4; color: #666;
+    border: none; border-radius: 10px;
+    font-size: 13px; font-weight: 600; text-decoration: none;
+    transition: background .2s;
 }
+.btn-cancelar:hover { background: #e8e8e8; color: #444; }
 
-/* Banner verde de sección (listados) */
-
-.panel-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: linear-gradient(90deg, var(--verde-700), var(--verde-600));
-  color: #fff;
-  padding: 16px 22px;
-  font-weight: 700;
-  font-size: 15px;
+.btn-guardar {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 10px 24px;
+    background: var(--verde); color: #fff;
+    border: none; border-radius: 10px;
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    transition: background .2s, transform .1s;
 }
+.btn-guardar:hover  { background: var(--verde-oscuro); }
+.btn-guardar:active { transform: scale(.98); }
 
-.panel-header .badge-count {
-  background: rgba(255, 255, 255, 0.2);
-  padding: 3px 12px;
-  border-radius: var(--radius-pill);
-  font-size: 12.5px;
-  font-weight: 600;
-}
-
-/* ==========================================================================
-   Formularios
-   ========================================================================== */
-
-.row.g-3 {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 18px 16px;
-}
-
-.row.g-3 > [class*="col-"] { flex: 1 1 100%; }
-
-.col-md-4 { flex-basis: calc(33.333% - 11px); }
-.col-md-6 { flex-basis: calc(50% - 8px); }
-.col-md-8 { flex-basis: calc(66.666% - 5px); }
-.col-md-12 { flex-basis: 100%; }
-
-@media (max-width: 860px) {
-  .col-md-4, .col-md-6, .col-md-8, .col-md-12 { flex-basis: 100%; }
-  .stats-row { grid-template-columns: repeat(2, 1fr); }
-}
-
-.form-label {
-  display: block;
-  margin-bottom: 7px;
-  font-size: 13.5px;
-  font-weight: 600;
-  color: var(--gris-700);
-}
-
-.form-label .text-danger { color: var(--rojo-600); }
-
-.form-control,
-.form-select {
-  width: 100%;
-  padding: 10px 14px;
-  font-size: 14px;
-  color: var(--gris-900);
-  background: var(--gris-25);
-  border: 1px solid var(--gris-200);
-  border-radius: var(--radius-sm);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
-}
-
-.form-control::placeholder { color: var(--gris-400); }
-
-.form-control:focus,
-.form-select:focus {
-  outline: none;
-  background: var(--blanco);
-  border-color: var(--verde-500);
-  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.15);
-}
-
-.form-select {
-  appearance: none;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' stroke='%236b7a70' stroke-width='1.6' fill='none' fill-rule='evenodd'/></svg>");
-  background-repeat: no-repeat;
-  background-position: right 14px center;
-  padding-right: 34px;
-}
-
-.form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  margin-top: 26px;
-  padding-top: 20px;
-  border-top: 1px solid var(--gris-100);
-}
-
-/* ==========================================================================
-   Tabla de listado (fichas, aprendices, instructores…)
-   ========================================================================== */
-
-.table-search-row {
-  display: flex;
-  gap: 14px;
-  align-items: center;
-  padding: 18px 22px;
-  border-bottom: 1px solid var(--gris-100);
-}
-
-.table-search-row input[type="search"],
-.table-search-row .search-input {
-  flex: 1;
-  padding: 10px 14px 10px 38px;
-  border: 1px solid var(--gris-200);
-  border-radius: var(--radius-sm);
-  font-size: 14px;
-  background: var(--gris-25) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%239aa79f' stroke-width='1.6'><circle cx='7' cy='7' r='5.5'/><path d='M11 11l3.5 3.5'/></svg>") no-repeat 12px center;
-}
-
-.table-filter-select {
-  padding: 10px 14px;
-  border: 1px solid var(--gris-200);
-  border-radius: var(--radius-sm);
-  font-size: 14px;
-  background: var(--gris-25);
-  min-width: 160px;
-}
-
-table.data-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-table.data-table thead th {
-  text-align: left;
-  font-size: 11.5px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--gris-500);
-  padding: 14px 22px;
-  border-bottom: 1px solid var(--gris-100);
-  background: var(--gris-25);
-}
-
-table.data-table tbody td {
-  padding: 16px 22px;
-  font-size: 14px;
-  color: var(--gris-800, #263029);
-  border-bottom: 1px solid var(--gris-100);
-  vertical-align: middle;
-}
-
-table.data-table tbody tr:hover { background: var(--verde-50); }
-table.data-table tbody tr:last-child td { border-bottom: none; }
-
-.pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 12px;
-  border-radius: var(--radius-pill);
-  font-size: 12.5px;
-  font-weight: 600;
-}
-
-.pill-ficha { background: var(--verde-50); color: var(--verde-700); border: 1px solid var(--verde-100); }
-.pill-jornada { background: var(--azul-100); color: var(--azul-600); }
-
-.badge-estado {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 12px;
-  border-radius: var(--radius-pill);
-  font-size: 12.5px;
-  font-weight: 600;
-}
-
-.badge-estado.activa { background: var(--verde-100); color: var(--verde-700); }
-.badge-estado.activa::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--verde-600); }
-
-.badge-estado.suspendida { background: var(--amarillo-100); color: var(--amarillo-600); }
-.badge-estado.suspendida::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--amarillo-600); }
-
-.cupos-bar {
-  margin-top: 6px;
-  height: 4px;
-  border-radius: var(--radius-pill);
-  background: var(--gris-100);
-  overflow: hidden;
-  width: 100px;
-}
-
-.cupos-bar-fill {
-  height: 100%;
-  background: var(--verde-500);
-  border-radius: var(--radius-pill);
-}
-
-.row-actions {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.row-actions button {
-  width: 32px;
-  height: 32px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--gris-200);
-  background: var(--blanco);
-  color: var(--gris-500);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-}
-
-.row-actions button:hover { background: var(--gris-100); color: var(--gris-900); }
 </style>
 
-<main class="main-content">
+<div class="dash-layout">
 
-    <div class="page-title-row">
-
+    <!-- ══ SIDEBAR ══ -->
+    <div class="sidebar">
         <div>
-            <h3>Nueva ficha</h3>
-            <p>Registra una nueva ficha de formación en el sistema.</p>
+            <div class="sidebar-brand">
+                <div class="icon-box"><i class="fas fa-seedling"></i></div>
+                <div>
+                    <h5>BioAsist SENA</h5>
+                    <small>Sistema Biométrico</small>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="dashboard.php"><i class="fas fa-home"></i> Inicio</a>
+                <a href="aprendices.php"><i class="fas fa-user-graduate"></i> Aprendices</a>
+                <a href="instructores.php"><i class="fas fa-chalkboard-teacher"></i> Instructores</a>
+                <a href="fichas.php" class="active"><i class="fas fa-folder"></i> Fichas</a>
+                <a href="programas.php"><i class="fas fa-book"></i> Programas</a>
+                <a href="asistencia.php"><i class="fas fa-fingerprint"></i> Asistencia</a>
+                <a href="reportes.php"><i class="fas fa-chart-bar"></i> Reportes</a>
+                <a href="historial.php"><i class="fas fa-clock"></i> Historial</a>
+                <a href="configuracion.php"><i class="fas fa-cog"></i> Configuración</a>
+            </nav>
         </div>
 
-        <a href="fichas.php" class="btn-volver">
-            <i class="fas fa-arrow-left"></i>
-            Volver a fichas
-        </a>
-
+        <div class="sidebar-bottom">
+            <div class="sidebar-biometric">
+                <div class="icon-box"><i class="fas fa-fingerprint"></i></div>
+                <div>
+                    <strong>Sistema biométrico</strong>
+                    <span><i class="fas fa-circle"></i> Conectado</span>
+                </div>
+            </div>
+            <div class="sidebar-user">
+                <div class="avatar"><i class="fas fa-user"></i></div>
+                <div class="info">
+                    <p><?php echo $_SESSION["nombre"] ?? "Usuario"; ?></p>
+                    <span>Administrador</span>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="form-card">
+    <!-- ══ ÁREA PRINCIPAL ══ -->
+    <div class="main-area">
 
-        <div class="form-card-header">
-            <div class="form-icon">
-                <i class="fas fa-layer-group"></i>
+        <!-- TOPBAR -->
+        <div class="topbar">
+            <div class="topbar-left">
+                <h4>Nueva Ficha</h4>
+                <small>Sistema Inteligente de Control de Asistencia</small>
             </div>
-
-            <div>
-                <h5>Información de la ficha</h5>
-                <p>Completa los datos académicos y administrativos.</p>
+            <div class="topbar-right">
+                <div class="time-box">
+                    <div class="hora" id="horaActual"></div>
+                    <div class="fecha" id="fechaActual"></div>
+                </div>
+                <div class="notif-btn">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge-dot">3</span>
+                </div>
+                <div class="dropdown">
+                    <button class="user-btn dropdown-toggle" data-bs-toggle="dropdown">
+                        <i class="fas fa-user"></i>
+                        <?php echo $_SESSION["nombre"] ?? "Usuario"; ?>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Mi Perfil</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-gear me-2"></i>Configuración</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="../logout.php"><i class="fas fa-right-from-bracket me-2"></i>Cerrar sesión</a></li>
+                    </ul>
+                </div>
             </div>
         </div>
 
-        <form action="../controllers/FichaController.php" method="POST">
+        <!-- CONTENIDO -->
+        <div class="content">
 
-            <input type="hidden" name="accion" value="crear">
-
-            <div class="row g-3">
-
-                <div class="col-md-4">
-                    <label class="form-label">Número de ficha <span class="text-danger">*</span></label>
-                    <input
-                        type="text"
-                        name="numero_ficha"
-                        class="form-control"
-                        placeholder="Ej: 2876543"
-                        required>
+            <!-- Cabecera -->
+            <div class="page-topbar">
+                <div class="page-topbar-left">
+                    <h2><i class="fas fa-folder-plus" style="color:var(--verde);"></i> Nueva ficha</h2>
+                    <p>Registra una nueva ficha de formación en el sistema.</p>
                 </div>
-
-                <div class="col-md-8">
-                    <label class="form-label">Programa de formación <span class="text-danger">*</span></label>
-                    <input
-                        type="text"
-                        name="programa"
-                        class="form-control"
-                        placeholder="Ej: Análisis y Desarrollo de Software"
-                        required>
-                </div>
-
-                <div class="col-md-4">
-                    <label class="form-label">Jornada <span class="text-danger">*</span></label>
-
-                    <select name="jornada" class="form-select" required>
-                        <option value="">Selecciona una jornada</option>
-                        <option value="Mañana">Mañana</option>
-                        <option value="Tarde">Tarde</option>
-                        <option value="Noche">Noche</option>
-                        <option value="Mixta">Mixta</option>
-                        <option value="Virtual">Virtual</option>
-                    </select>
-                </div>
-
-                <div class="col-md-4">
-                    <label class="form-label">Nivel de formación</label>
-
-                    <select name="nivel_formacion" class="form-select">
-                        <option value="">Selecciona un nivel</option>
-                        <option value="Técnico">Técnico</option>
-                        <option value="Tecnólogo">Tecnólogo</option>
-                        <option value="Especialización tecnológica">Especialización tecnológica</option>
-                        <option value="Complementario">Complementario</option>
-                    </select>
-                </div>
-
-                <div class="col-md-4">
-                    <label class="form-label">Cupo máximo <span class="text-danger">*</span></label>
-
-                    <input
-                        type="number"
-                        name="cupo_maximo"
-                        class="form-control"
-                        value="35"
-                        min="1"
-                        max="200"
-                        required>
-                </div>
-
-                <div class="col-md-6">
-                    <label class="form-label">Fecha de inicio</label>
-
-                    <input
-                        type="date"
-                        name="fecha_inicio"
-                        class="form-control">
-                </div>
-
-                <div class="col-md-6">
-                    <label class="form-label">Fecha estimada de finalización</label>
-
-                    <input
-                        type="date"
-                        name="fecha_fin"
-                        class="form-control">
-                </div>
-
-                <div class="col-md-12">
-                    <label class="form-label">Instructor responsable</label>
-
-                    <input
-                        type="text"
-                        name="instructor"
-                        class="form-control"
-                        placeholder="Ej: Carlos Pérez">
-                </div>
-
-            </div>
-
-            <div class="form-actions">
-
-                <a href="fichas.php" class="btn-cancelar">
-                    Cancelar
+                <a href="fichas.php" class="btn-volver">
+                    <i class="fas fa-arrow-left"></i> Volver a fichas
                 </a>
-
-                <button type="submit" class="btn-guardar">
-                    <i class="fas fa-save"></i>
-                    Guardar ficha
-                </button>
-
             </div>
 
-        </form>
+            <!-- FORMULARIO -->
+            <div class="form-card">
 
-    </div>
+                <div class="form-card-header">
+                    <div class="header-icon"><i class="fas fa-layer-group"></i></div>
+                    <div>
+                        <h3>Información de la ficha</h3>
+                        <small>Completa los datos académicos y administrativos</small>
+                    </div>
+                </div>
 
-</main>
+                <form action="../controllers/FichaController.php" method="POST">
+
+                    <input type="hidden" name="accion" value="crear">
+
+                    <div class="form-body">
+
+                        <!-- Número + programa -->
+                        <div class="form-grid-1-2">
+
+                            <div class="form-group">
+                                <label class="field-label">
+                                    Número de ficha <span class="req">*</span>
+                                </label>
+                                <div class="input-wrap">
+                                    <i class="fas fa-hashtag input-icon"></i>
+                                    <input type="text" name="numero_ficha"
+                                        placeholder="Ej: 2876543" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="field-label">
+                                    Programa de formación <span class="req">*</span>
+                                </label>
+                                <div class="input-wrap">
+                                    <i class="fas fa-book input-icon"></i>
+                                    <select name="programa_id" required>
+                                        <option value="">Selecciona un programa</option>
+                                        <?php foreach($programas as $p): ?>
+                                            <option value="<?= $p["id"] ?>">
+                                                <?= htmlspecialchars($p["codigo"]) ?> —
+                                                <?= htmlspecialchars($p["nombre"]) ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                    <span class="select-arrow">▼</span>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Sep: configuración -->
+                        <div class="form-grid-3">
+                            <div class="section-sep">
+                                <i class="fas fa-sliders"></i> Configuración
+                            </div>
+                        </div>
+
+                        <!-- Jornada + nivel + cupo -->
+                        <div class="form-grid-3">
+
+                            <div class="form-group">
+                                <label class="field-label">
+                                    Jornada <span class="req">*</span>
+                                </label>
+                                <div class="input-wrap">
+                                    <i class="fas fa-clock input-icon"></i>
+                                    <select name="jornada" required>
+                                        <option value="">Selecciona una jornada</option>
+                                        <option value="Mañana">Mañana</option>
+                                        <option value="Tarde">Tarde</option>
+                                        <option value="Noche">Noche</option>
+                                        <option value="Mixta">Mixta</option>
+                                        <option value="Virtual">Virtual</option>
+                                    </select>
+                                    <span class="select-arrow">▼</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="field-label">Nivel de formación</label>
+                                <div class="input-wrap">
+                                    <i class="fas fa-layer-group input-icon"></i>
+                                    <select name="nivel_formacion">
+                                        <option value="">Selecciona un nivel</option>
+                                        <option value="Técnico">Técnico</option>
+                                        <option value="Tecnólogo">Tecnólogo</option>
+                                        <option value="Especialización tecnológica">Especialización tecnológica</option>
+                                        <option value="Complementario">Complementario</option>
+                                    </select>
+                                    <span class="select-arrow">▼</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="field-label">
+                                    Cupo máximo <span class="req">*</span>
+                                </label>
+                                <div class="input-wrap">
+                                    <i class="fas fa-users input-icon"></i>
+                                    <input type="number" name="cupo_maximo"
+                                        value="35" min="1" max="200" required>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Sep: fechas -->
+                        <div class="form-grid-3">
+                            <div class="section-sep">
+                                <i class="fas fa-calendar"></i> Fechas y responsable
+                            </div>
+                        </div>
+
+                        <!-- Fechas + instructor -->
+                        <div class="form-grid-3">
+
+                            <div class="form-group">
+                                <label class="field-label">Fecha de inicio</label>
+                                <div class="input-wrap">
+                                    <i class="fas fa-calendar-day input-icon"></i>
+                                    <input type="date" name="fecha_inicio">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="field-label">Fecha estimada de finalización</label>
+                                <div class="input-wrap">
+                                    <i class="fas fa-calendar-check input-icon"></i>
+                                    <input type="date" name="fecha_fin">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="field-label">Instructor responsable</label>
+                                <div class="input-wrap">
+                                    <i class="fas fa-chalkboard-teacher input-icon"></i>
+                                    <input type="text" name="instructor"
+                                        placeholder="Ej: Carlos Pérez">
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div><!-- /form-body -->
+
+                    <div class="form-footer">
+                        <a href="fichas.php" class="btn-cancelar">
+                            <i class="fas fa-xmark"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn-guardar">
+                            <i class="fas fa-floppy-disk"></i> Guardar ficha
+                        </button>
+                    </div>
+
+                </form>
+
+            </div><!-- /form-card -->
+
+        </div><!-- /content -->
+
+    </div><!-- /main-area -->
+
+</div><!-- /dash-layout -->
+
+<script>
+function actualizarHora(){
+    const now = new Date();
+    document.getElementById("horaActual").textContent =
+        now.toLocaleTimeString('es-CO');
+    document.getElementById("fechaActual").textContent =
+        now.toLocaleDateString('es-CO', { day:'numeric', month:'long', year:'numeric' });
+}
+actualizarHora();
+setInterval(actualizarHora, 1000);
+</script>
 
 <?php require_once "layout/footer.php"; ?>

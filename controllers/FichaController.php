@@ -9,9 +9,9 @@ class FichaController {
         if($_SERVER["REQUEST_METHOD"] === "POST"){
 
             $data = [
-                "numero_ficha"     => trim($_POST["numero_ficha"]),
-                "programa"         => trim($_POST["programa"]),
-                "jornada"          => $_POST["jornada"],
+               "numero_ficha"     => trim($_POST["numero_ficha"]),
+"programa_id"      => $_POST["programa_id"],
+"jornada"          => $_POST["jornada"],
                 "nivel_formacion"  => $_POST["nivel_formacion"],
                 "fecha_inicio"     => $_POST["fecha_inicio"],
                 "fecha_fin"        => $_POST["fecha_fin"],
@@ -36,17 +36,17 @@ class FichaController {
 
         if($_SERVER["REQUEST_METHOD"] === "POST"){
 
-            $data = [
-                "id"               => $_POST["id"],
-                "numero_ficha"     => trim($_POST["numero_ficha"]),
-                "programa"         => trim($_POST["programa"]),
-                "jornada"          => $_POST["jornada"],
-                "nivel_formacion"  => $_POST["nivel_formacion"],
-                "fecha_inicio"     => $_POST["fecha_inicio"],
-                "fecha_fin"        => $_POST["fecha_fin"],
-                "instructor"       => trim($_POST["instructor"]),
-                "cupo_maximo"      => $_POST["cupo_maximo"]
-            ];
+          $data = [
+    "id"               => $_POST["id"],
+    "numero_ficha"     => trim($_POST["numero_ficha"]),
+    "programa_id"      => $_POST["programa_id"],
+    "jornada"          => $_POST["jornada"],
+    "nivel_formacion"  => $_POST["nivel_formacion"],
+    "fecha_inicio"     => $_POST["fecha_inicio"],
+    "fecha_fin"        => $_POST["fecha_fin"],
+    "instructor"       => trim($_POST["instructor"]),
+    "cupo_maximo"      => $_POST["cupo_maximo"]
+];
 
             $resultado = FichaModel::actualizar($data);
 

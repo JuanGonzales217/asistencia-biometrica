@@ -3,6 +3,8 @@
 session_start();
 
 require_once "../models/FichaModel.php";
+require_once "../models/ProgramaModel.php";
+$programas = ProgramaModel::listarActivos();
 
 if(!isset($_GET["id"])){
     header("Location: fichas.php");
@@ -470,17 +472,32 @@ body {
                             </div>
 
                             <div class="form-group">
-                                <label class="field-label">
-                                    Programa de formación <span class="req">*</span>
-                                </label>
-                                <div class="input-wrap">
-                                    <i class="fas fa-book input-icon"></i>
-                                    <input type="text" name="programa"
-                                        value="<?= htmlspecialchars($ficha["programa"] ?? "") ?>"
-                                        placeholder="Nombre del programa" required>
-                                </div>
-                            </div>
+    <label class="field-label">
+        Programa de formación <span class="req">*</span>
+    </label>
 
+    <div class="input-wrap">
+        <i class="fas fa-book input-icon"></i>
+
+        <select name="programa_id" required>
+            <option value="">Selecciona un programa</option>
+
+            <?php foreach($programas as $p): ?>
+                <option
+                    value="<?= $p["id"] ?>"
+                    <?= ($ficha["programa_id"] == $p["id"]) ? "selected" : "" ?>
+                >
+                    <?= htmlspecialchars($p["codigo"]) ?>
+                    -
+                    <?= htmlspecialchars($p["nombre"]) ?>
+                </option>
+            <?php endforeach; ?>
+
+        </select>
+
+        <span class="select-arrow">▼</span>
+    </div>
+</div>
                         </div>
 
                         <!-- Separador -->

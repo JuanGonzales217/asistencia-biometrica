@@ -617,14 +617,36 @@ body {
                                             </span>
                                         </td>
 
-                                        <td>
-                                            <div class="programa-nombre">
-                                                <?= htmlspecialchars($f["programa"] ?? "Sin programa") ?>
-                                            </div>
-                                            <div class="programa-nivel">
-                                                <?= htmlspecialchars($f["nivel_formacion"] ?? "Sin nivel") ?>
-                                            </div>
-                                        </td>
+                                    <td>
+    <?php if(!empty($f["nombre_programa"])): ?>
+
+        <div class="programa-nombre">
+            <?= htmlspecialchars($f["nombre_programa"]) ?>
+        </div>
+
+        <div class="programa-nivel">
+            <i class="fas fa-code"></i>
+            <?= htmlspecialchars($f["codigo_programa"] ?? "Sin código") ?>
+
+            <?php if(!empty($f["nivel_formacion"])): ?>
+                <span style="margin: 0 5px;">•</span>
+                <?= htmlspecialchars($f["nivel_formacion"]) ?>
+            <?php endif; ?>
+        </div>
+
+    <?php else: ?>
+
+        <div class="programa-nombre" style="color:#94a3b8;">
+            <i class="fas fa-triangle-exclamation"></i>
+            Sin programa asignado
+        </div>
+
+        <div class="programa-nivel">
+            <?= htmlspecialchars($f["nivel_formacion"] ?? "Sin nivel") ?>
+        </div>
+
+    <?php endif; ?>
+</td>
 
                                         <td>
                                             <span class="jornada-badge">

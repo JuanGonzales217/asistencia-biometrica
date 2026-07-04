@@ -205,4 +205,18 @@ public static function totalAprendicesPorPrograma($programa_id){
 
     return $sql->fetch(PDO::FETCH_ASSOC);
 }
+
+public static function listarActivos(){
+
+    $sql = Conexion::conectar()->prepare("
+        SELECT id, codigo, nombre
+        FROM programas
+        WHERE estado = 'Activo'
+        ORDER BY nombre ASC
+    ");
+
+    $sql->execute();
+
+    return $sql->fetchAll(PDO::FETCH_ASSOC);
+}
 }
