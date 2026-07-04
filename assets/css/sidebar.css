@@ -1,0 +1,183 @@
+/*=============================
+    SIDEBAR
+==============================*/
+
+.sidebar{
+
+    width:270px;
+    height:100vh;
+
+    position:fixed;
+
+    top:0;
+    left:0;
+
+    background:#0b6b3a;
+
+    color:#fff;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:space-between;
+
+    box-shadow:0 0 20px rgba(0,0,0,.25);
+
+    z-index:999;
+
+    transition:.35s;
+
+}
+
+/*=============================
+    LOGO
+==============================*/
+
+.sidebar-header{
+
+    padding:30px 20px;
+
+    display:flex;
+
+    align-items:center;
+
+    border-bottom:1px solid rgba(255,255,255,.15);
+
+}
+
+.sidebar-header img{
+
+    width:65px;
+
+    margin-right:15px;
+
+}
+
+.logo-text h2{
+
+    margin:0;
+
+    font-size:22px;
+
+    font-weight:bold;
+
+}
+
+.logo-text span{
+
+    font-size:13px;
+
+    opacity:.8;
+
+}
+
+/*=============================
+    MENU
+==============================*/
+
+.sidebar-menu{
+
+    list-style:none;
+
+    margin:0;
+
+    padding:20px 0;
+
+    flex:1;
+
+}
+
+.sidebar-menu li{
+
+    margin:6px 12px;
+
+}
+
+.sidebar-menu li a{
+
+    color:#fff;
+
+    text-decoration:none;
+
+    display:flex;
+
+    align-items:center;
+
+    padding:14px 18px;
+
+    border-radius:12px;
+
+    transition:.3s;
+
+}
+
+.sidebar-menu li a i{
+
+    width:28px;
+
+    font-size:18px;
+
+}
+
+.sidebar-menu li:hover a{
+
+    background:rgba(255,255,255,.12);
+
+}
+
+.sidebar-menu li.active a{
+
+    background:#fff;
+
+    color:#0b6b3a;
+
+    font-weight:bold;
+
+}
+
+/*=============================
+    USUARIO
+==============================*/
+
+.sidebar-user{
+
+    border-top:1px solid rgba(255,255,255,.15);
+
+    padding:20px;
+
+    display:flex;
+
+    align-items:center;
+
+}
+
+.sidebar-user img{
+
+    width:55px;
+
+    height:55px;
+
+    border-radius:50%;
+
+    object-fit:cover;
+
+    margin-right:15px;
+
+}
+
+.sidebar-user h5{
+
+    margin:0;
+
+    font-size:16px;
+
+}
+
+.sidebar-user span{
+
+    font-size:13px;
+
+    opacity:.8;
+
+}

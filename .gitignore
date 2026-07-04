@@ -1,0 +1,14 @@
+# Dependencias instaladas por Composer
+/vendor/
+
+# Configuración local con contraseñas
+/config/conexion.php
+
+# Archivos temporales
+*.log
+.DS_Store
+Thumbs.db
+
+# Archivos de configuración del editor
+.vscode/
+.idea/
